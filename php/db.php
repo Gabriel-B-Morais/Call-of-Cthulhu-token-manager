@@ -25,10 +25,10 @@ class Database
         return self::$pdo;
       }
 
-      $host = $_ENV['DB_HOST'] ?? getenv('DB_HOST') ?: 'db';
-      $port = $_ENV['DB_PORT'] ?? getenv('DB_PORT') ?: '3306';
-      $name = $_ENV['DB_DATABASE'] ?? getenv('DB_DATABASE') ?: 'cofc_db';
-      $user = $_ENV['DB_USERNAME'] ?? getenv('DB_USERNAME') ?: 'cofc_user';
+      $host = $_ENV['DB_HOST'] ?? getenv('DB_HOST') ?: '';
+      $port = $_ENV['DB_PORT'] ?? getenv('DB_PORT') ?: '';
+      $name = $_ENV['DB_DATABASE'] ?? getenv('DB_DATABASE') ?: '';
+      $user = $_ENV['DB_USERNAME'] ?? getenv('DB_USERNAME') ?: '';
       $pass = $_ENV['DB_PASSWORD'] ?? getenv('DB_PASSWORD') ?: '';
 
       $dsn = "mysql:host={$host};port={$port};dbname={$name};charset=utf8mb4";
