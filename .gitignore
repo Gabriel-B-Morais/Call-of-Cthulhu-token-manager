@@ -1,3 +1,6 @@
 .vscode/
 .github/
+
 .env
+.env.prod
+.env.dev

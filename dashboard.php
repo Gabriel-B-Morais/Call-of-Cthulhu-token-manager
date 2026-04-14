@@ -10,7 +10,13 @@ startSecureSession();
 
 $username = $_SESSION['username'] ?? 'Investigador';
 $userId = (int) $_SESSION['user_id'];
-$sheets = listSheetsByUser($userId);
+$sheets = [];
+
+try {
+  $sheets = listSheetsByUser($userId);
+} catch (\Throwable $e) {
+  $_SESSION['error'] = 'Nao foi possivel carregar suas fichas agora. Verifique a configuracao do banco.';
+}
 
 $success = $_SESSION['success'] ?? null;
 $error = $_SESSION['error'] ?? null;

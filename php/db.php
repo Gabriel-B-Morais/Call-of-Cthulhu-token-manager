@@ -15,6 +15,7 @@ class Database
 {
 
   private static ?PDO $pdo = null;
+  private static bool $envLoaded = false;
 
   private function __construct() {}
 
@@ -25,11 +26,17 @@ class Database
         return self::$pdo;
       }
 
-      $host = $_ENV['DB_HOST'] ?? getenv('DB_HOST') ?: '';
-      $port = $_ENV['DB_PORT'] ?? getenv('DB_PORT') ?: '';
-      $name = $_ENV['DB_DATABASE'] ?? getenv('DB_DATABASE') ?: '';
-      $user = $_ENV['DB_USERNAME'] ?? getenv('DB_USERNAME') ?: '';
-      $pass = $_ENV['DB_PASSWORD'] ?? getenv('DB_PASSWORD') ?: '';
+      self::loadEnvFromFile();
+
+      $host = self::getConfigValue('DB_HOST');
+      $port = self::getConfigValue('DB_PORT');
+      $name = self::getConfigValue('DB_DATABASE');
+      $user = self::getConfigValue('DB_USERNAME');
+      $pass = self::getConfigValue('DB_PASSWORD');
+
+      if ($host === '' || $port === '' || $name === '' || $user === '') {
+        throw new RuntimeException('Configuracao de banco incompleta.');
+      }
 
       $dsn = "mysql:host={$host};port={$port};dbname={$name};charset=utf8mb4";
 
@@ -42,6 +49,55 @@ class Database
       return self::$pdo;
     } catch (PDOException $e) {
       throw new RuntimeException('Erro ao conectar ao banco de dados: ' . $e->getMessage());
+    }
+  }
+
+  private static function getConfigValue(string $key): string
+  {
+    $value = $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key) ?: '';
+    return trim((string) $value);
+  }
+
+  private static function loadEnvFromFile(): void
+  {
+    if (self::$envLoaded) {
+      return;
+    }
+
+    self::$envLoaded = true;
+
+    $root = dirname(__DIR__);
+    $candidates = [
+      $root . '/.env.prod',
+      $root . '/.env',
+    ];
+
+    foreach ($candidates as $file) {
+      if (!is_file($file) || !is_readable($file)) {
+        continue;
+      }
+
+      $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+      if ($lines === false) {
+        continue;
+      }
+
+      foreach ($lines as $line) {
+        $line = trim($line);
+        if ($line === '' || strpos($line, '#') === 0 || strpos($line, '=') === false) {
+          continue;
+        }
+
+        [$key, $value] = explode('=', $line, 2);
+        $key = trim($key);
+        $value = trim($value);
+
+        if ($key === '' || isset($_ENV[$key])) {
+          continue;
+        }
+
+        $_ENV[$key] = $value;
+      }
     }
   }
 
@@ -59,7 +115,7 @@ class Database
     }
   }
 
-  public static function fetch(string $sql, array $params = []) : ?array
+  public static function fetch(string $sql, array $params = []): ?array
   {
     try {
       $stmt = self::query($sql, $params);
@@ -69,7 +125,7 @@ class Database
     }
   }
 
-  public static function fetchAll(string $sql, array $params = []) : ?array
+  public static function fetchAll(string $sql, array $params = []): ?array
   {
     try {
       $stmt = self::query($sql, $params);

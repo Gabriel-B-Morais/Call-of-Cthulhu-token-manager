@@ -1,7 +1,7 @@
 <?php
 
-require_once 'db.php';
-require_once 'session.php';
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/session.php';
 
 use App\Database\Database;
 
@@ -9,7 +9,11 @@ function login(string $username, string $password): bool
 {
   startSecureSession();
 
-  $user = Database::fetch('SELECT id, password_hash FROM users WHERE username = :username', ['username' => $username]);
+  try {
+    $user = Database::fetch('SELECT id, password_hash FROM users WHERE username = :username', ['username' => $username]);
+  } catch (\Throwable $e) {
+    return false;
+  }
 
   if (!$user) {
     return false;

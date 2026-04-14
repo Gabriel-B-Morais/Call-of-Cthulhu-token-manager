@@ -1,7 +1,7 @@
 <?php
 
-require_once 'php/session.php';
-require_once 'php/csrf.php';
+require_once __DIR__ . '/php/session.php';
+require_once __DIR__ . '/php/csrf.php';
 
 startSecureSession();
 

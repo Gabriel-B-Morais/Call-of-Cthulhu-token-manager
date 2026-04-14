@@ -39,6 +39,6 @@ CREATE TABLE IF NOT EXISTS character_sheets (
   CONSTRAINT fk_sheets_users FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO users VALUES (1, 'testuser', '$2y$10$e0NRu9s5z5j8X9Zl3n7Oe5v1a8b6c4d2f1g0h9i8j7k6l5m4n3o2p1q');
+INSERT INTO users VALUES (1, 'testuser', '$2y$10$fw6JK6qtuRU6wxsaiCewJeCt9csQ8C2g6Msfv/QPAH2kDzyeURmoy');
 
 

@@ -45,6 +45,22 @@ docker compose down -v
 docker compose up -d --build
 ```
 
+## Troubleshooting de login de teste
+
+Se o login com `testuser` / `testpassword` falhar em um banco ja existente, aplique a correcao abaixo (o schema antigo tinha hash invalido):
+
+```sql
+SOURCE /var/www/html/docs/fix-testuser-login.sql;
+```
+
+Ou execute diretamente no phpMyAdmin:
+
+```sql
+UPDATE users
+SET password_hash = '$2y$10$fw6JK6qtuRU6wxsaiCewJeCt9csQ8C2g6Msfv/QPAH2kDzyeURmoy'
+WHERE username = 'testuser';
+```
+
 ## Comandos uteis
 
 ```powershell
